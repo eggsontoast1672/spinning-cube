@@ -105,8 +105,9 @@ int main() {
   glBindVertexArray(va);
 
   float vertices[] = {
+    -0.5,  0.5,
+     0.5,  0.5,
     -0.5, -0.5,
-     0.0,  0.5,
      0.5, -0.5,
   };
 
@@ -115,6 +116,16 @@ int main() {
   glGenBuffers(1, &vb);
   glBindBuffer(GL_ARRAY_BUFFER, vb);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  unsigned int indices[] = {
+    0, 1, 2,
+    1, 2, 3,
+  };
+
+  GLuint eb;
+  glGenBuffers(1, &eb);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   std::string vertex_source = load_shader_source("res/shaders/basic.vert");
   GLuint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source.c_str());
@@ -135,7 +146,7 @@ int main() {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
