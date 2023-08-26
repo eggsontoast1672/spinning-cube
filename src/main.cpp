@@ -1,12 +1,33 @@
+#include <cstdlib>
 #include <iostream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+constexpr std::size_t CREATE_SHADER_LOG_SIZE = 512;
+
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   (void)window;
 
   glViewport(0, 0, width, height);
+}
+
+static GLuint create_shader(GLenum type, const char *source) {
+  GLuint shader = glCreateShader(type);
+  glShaderSource(shader, 1, &source, nullptr);
+  glCompileShader(shader);
+
+  GLint status;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+  if (!status) {
+    char log[CREATE_SHADER_LOG_SIZE];
+    glad_glGetShaderInfoLog(shader, CREATE_SHADER_LOG_SIZE, nullptr, log);
+
+    // TODO: Display name of shader that failed to compile
+    std::cerr << "Failed to create shader: " << log << '\n';
+  }
+
+  return shader;
 }
 
 int main() {
@@ -62,12 +83,7 @@ int main() {
     }
   )glsl";
 
-  GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-
-  glShaderSource(vertex_shader, 1, &vertex_source, nullptr);
-  glCompileShader(vertex_shader);
-
-  // TODO: Check for shader compile errors
+  GLuint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source);
 
   const char *fragment_source = R"glsl(
     #version 330 core
@@ -79,12 +95,7 @@ int main() {
     }
   )glsl";
 
-  GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-
-  glShaderSource(fragment_shader, 1, &fragment_source, nullptr);
-  glCompileShader(fragment_shader);
-
-  // TODO: Check for shader compile errors
+  GLuint fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source);
 
   GLuint program = glCreateProgram();
 
