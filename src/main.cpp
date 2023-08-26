@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -73,7 +74,7 @@ static GLuint create_program(GLuint vertex_shader, GLuint fragment_shader) {
   return program;
 }
 
-int main() {
+int main(int argc, char **argv) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -139,7 +140,11 @@ int main() {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  for (int i = 1; i < argc; ++i) {
+    if (std::strcmp(argv[i], "--wireframe") == 0) {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+  }
 
   while (!glfwWindowShouldClose(window)) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
