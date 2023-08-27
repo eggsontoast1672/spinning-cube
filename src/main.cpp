@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -40,15 +41,15 @@ int main(int argc, char **argv) {
   glGenVertexArrays(1, &va);
   glBindVertexArray(va);
 
+  // x, y, r, g, b
   float vertices[] = {
-    -0.5,  0.5,
-     0.5,  0.5,
-    -0.5, -0.5,
-     0.5, -0.5,
+    -0.5,  0.5, 1.0, 0.0, 0.0,
+     0.5,  0.5, 1.0, 1.0, 0.0,
+    -0.5, -0.5, 0.0, 1.0, 0.0,
+     0.5, -0.5, 0.0, 0.0, 1.0,
   };
 
   GLuint vb;
-
   glGenBuffers(1, &vb);
   glBindBuffer(GL_ARRAY_BUFFER, vb);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -73,7 +74,10 @@ int main(int argc, char **argv) {
   glUseProgram(program);
 
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void *)0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void *)(2 * sizeof(float)));
 
   for (int i = 1; i < argc; ++i) {
     if (std::strcmp(argv[i], "--wireframe") == 0) {
@@ -87,6 +91,11 @@ int main(int argc, char **argv) {
     }
 
     glClear(GL_COLOR_BUFFER_BIT);
+
+    float time = glfwGetTime();
+    float green = (std::sin(time) / 2.0) + 0.5;
+    GLint uniform_color = glGetUniformLocation(program, "uniform_color");
+    glUniform4f(uniform_color, 0.0, green, 0.0, 1.0);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
