@@ -46,20 +46,6 @@ GLuint create_shader(GLenum type, const char *source) {
   return shader;
 }
 
-std::string get_resource_path(int argc, char **argv) {
-  for (int i = 1; i < argc; ++i) {
-    if (std::strcmp(argv[i], "--resource-path") == 0) {
-      if (i + 1 >= argc) {
-        std::cerr << "The path to the resource folder must be specified after --resource-path" << std::endl;
-        return {};
-      }
-      return std::string{argv[i + 1]};
-    }
-  }
-  std::cerr << "The resource path must be specified via the --resource-path flag" << std::endl;
-  return {};
-}
-
 std::string load_shader_source(const std::string &path) {
   std::fstream stream{path};
   if (!stream.is_open()) {

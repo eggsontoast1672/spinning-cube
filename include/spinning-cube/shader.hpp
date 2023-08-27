@@ -21,16 +21,6 @@ GLuint create_program(GLuint vertex_shader, GLuint fragment_shader);
 /// \return The OpenGL ID uniquely identifying the shader object.
 GLuint create_shader(GLenum type, const char *source);
 
-/// \brief Gets the resource path from the command-line arguments passed to the
-///        program.
-///
-/// \param argc The number of command-line arguments.
-/// \param argv The command-line arguments themselves.
-///
-/// \return The path to the directory containing program resources on success,
-///         or an empty string on failure.
-std::string get_resource_path(int argc, char **argv);
-
 /// \brief Load the source code of a shader.
 ///
 /// \param path The path to the file containing the source code. Ideally, this

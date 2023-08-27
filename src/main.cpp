@@ -7,14 +7,7 @@
 
 #include "spinning-cube/shader.hpp"
 
-static void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-  (void)window;
-  glViewport(0, 0, width, height);
-}
-
 int main(int argc, char **argv) {
-  std::string resource_path = get_resource_path(argc, argv);
-
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -38,7 +31,9 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+  });
 
   GLuint va;
 
@@ -68,10 +63,10 @@ int main(int argc, char **argv) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  std::string vertex_source = load_shader_source(resource_path + "/shaders/basic.vert");
+  std::string vertex_source = load_shader_source("res/shaders/basic.vert");
   GLuint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source.c_str());
 
-  std::string fragment_source = load_shader_source(resource_path + "/shaders/basic.frag");
+  std::string fragment_source = load_shader_source("res/shaders/basic.frag");
   GLuint fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source.c_str());
 
   GLuint program = create_program(vertex_shader, fragment_shader);
