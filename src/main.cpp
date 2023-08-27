@@ -1,80 +1,20 @@
-#include <cstdlib>
 #include <cstring>
-#include <fstream>
 #include <iostream>
 #include <string>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-constexpr std::size_t CREATE_PROGRAM_LOG_SIZE = 512;
-constexpr std::size_t CREATE_SHADER_LOG_SIZE = 512;
+#include "spinning-cube/shader.hpp"
 
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   (void)window;
-
   glViewport(0, 0, width, height);
 }
 
-static std::string load_shader_source(const char *path) {
-  std::ifstream stream{path};
-  return std::string{
-    std::istreambuf_iterator<char>{stream},
-    std::istreambuf_iterator<char>{}
-  };
-}
-
-static GLuint create_shader(GLenum type, const char *source) {
-  GLuint shader = glCreateShader(type);
-  glShaderSource(shader, 1, &source, nullptr);
-  glCompileShader(shader);
-
-  GLint status;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-  if (!status) {
-    char log[CREATE_SHADER_LOG_SIZE];
-    glad_glGetShaderInfoLog(shader, CREATE_SHADER_LOG_SIZE, nullptr, log);
-
-    const char *type_string;
-    switch (type) {
-    case GL_FRAGMENT_SHADER:
-      type_string = "vertex";
-      break;
-    case GL_VERTEX_SHADER:
-      type_string = "vertex";
-      break;
-    default:
-      type_string = "undefined";
-      break;
-    }
-
-    std::cerr << "Failed to create " << type_string << " shader: " << log << std::endl;
-  }
-
-  return shader;
-}
-
-static GLuint create_program(GLuint vertex_shader, GLuint fragment_shader) {
-  GLuint program = glCreateProgram();
-  glAttachShader(program, vertex_shader);
-  glAttachShader(program, fragment_shader);
-  glLinkProgram(program);
-
-  GLint status;
-  glGetProgramiv(program, GL_LINK_STATUS, &status);
-  if (!status) {
-    char log[CREATE_PROGRAM_LOG_SIZE];
-    glGetProgramInfoLog(program, CREATE_PROGRAM_LOG_SIZE, nullptr, log);
-    std::cerr << "Failed to create program: " << log << std::endl;
-  }
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
-
-  return program;
-}
-
 int main(int argc, char **argv) {
+  std::string resource_path = get_resource_path(argc, argv);
+
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -128,10 +68,10 @@ int main(int argc, char **argv) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  std::string vertex_source = load_shader_source("res/shaders/basic.vert");
+  std::string vertex_source = load_shader_source(resource_path + "/shaders/basic.vert");
   GLuint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source.c_str());
 
-  std::string fragment_source = load_shader_source("res/shaders/basic.frag");
+  std::string fragment_source = load_shader_source(resource_path + "/shaders/basic.frag");
   GLuint fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source.c_str());
 
   GLuint program = create_program(vertex_shader, fragment_shader);
