@@ -83,8 +83,11 @@ int main(int argc, char **argv) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // We want offset to oscillate between -0.5 and 0.5
-    float offset = std::sin(glfwGetTime() * 2.0) * 0.5;
-    shader.set_uniform("uniform_offset", offset);
+    float offset_x = std::sin(glfwGetTime() * 2.0) * 0.5;
+    shader.set_uniform("uniform_offset_x", offset_x);
+
+    float offset_y = std::sin(glfwGetTime() * 1.0) * 0.5;
+    shader.set_uniform("uniform_offset_y", offset_y);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
