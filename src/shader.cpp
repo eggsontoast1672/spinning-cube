@@ -8,19 +8,40 @@
 
 #include <glad/glad.h>
 
-static constexpr std::size_t LOG_SIZE = 512;
+#include "spinning-cube/types.hpp"
 
-GLuint create_program(GLuint vertex_shader, GLuint fragment_shader) {
-  GLuint program = glCreateProgram();
+Shader::Shader(const char *vertex_path, const char *fragment_path) {
+  std::string vertex_source = load_shader_source(vertex_path);
+  std::string fragment_source = load_shader_source(fragment_path);
+
+  uint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source.c_str());
+  uint fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source.c_str());
+
+  m_id = create_program(vertex_shader, fragment_shader);
+
+  glDeleteShader(vertex_shader);
+  glDeleteShader(fragment_shader);
+}
+
+void Shader::bind() const {
+  glUseProgram(m_id);
+}
+
+void Shader::set_uniform(const char *name, float value) const {
+  glUniform1f(glGetUniformLocation(m_id, name), value);
+}
+
+uint Shader::create_program(uint vertex_shader, uint fragment_shader) {
+  uint program = glCreateProgram();
   glAttachShader(program, vertex_shader);
   glAttachShader(program, fragment_shader);
   glLinkProgram(program);
 
-  GLint status;
+  int status;
   glGetProgramiv(program, GL_LINK_STATUS, &status);
   if (!status) {
-    char log[LOG_SIZE];
-    glGetProgramInfoLog(program, LOG_SIZE, nullptr, log);
+    char log[log_size];
+    glGetProgramInfoLog(program, log_size, nullptr, log);
     std::cerr << log << std::endl;
   }
 
@@ -30,26 +51,29 @@ GLuint create_program(GLuint vertex_shader, GLuint fragment_shader) {
   return program;
 }
 
-GLuint create_shader(GLenum type, const char *source) {
-  GLuint shader = glCreateShader(type);
+uint Shader::create_shader(uint type, const char *source) {
+  uint shader = glCreateShader(type);
   glShaderSource(shader, 1, &source, nullptr);
   glCompileShader(shader);
 
-  GLint status;
+  int status;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
   if (!status) {
-    char log[LOG_SIZE];
-    glGetShaderInfoLog(shader, LOG_SIZE, nullptr, log);
+    char log[log_size];
+    glGetShaderInfoLog(shader, log_size, nullptr, log);
     std::cerr << log << std::endl;
   }
 
   return shader;
 }
 
-std::string load_shader_source(const std::string &path) {
-  std::fstream stream{path};
-  if (!stream.is_open()) {
-    std::cerr << "Failed to open file '" << path << "'" << std::endl;
+std::string Shader::load_shader_source(const char *path) {
+  std::fstream stream;
+  stream.exceptions(std::fstream::badbit | std::fstream::failbit);
+  try {
+    stream.open(path);
+  } catch (const std::ios_base::failure &error) {
+    std::cerr << error.what() << std::endl;
   }
   return std::string{
     std::istreambuf_iterator<char>{stream},

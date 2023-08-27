@@ -43,10 +43,9 @@ int main(int argc, char **argv) {
 
   // x, y, r, g, b
   float vertices[] = {
-    -0.5,  0.5, 1.0, 0.0, 0.0,
-     0.5,  0.5, 1.0, 1.0, 0.0,
-    -0.5, -0.5, 0.0, 1.0, 0.0,
-     0.5, -0.5, 0.0, 0.0, 1.0,
+    -0.5, -0.5,
+     0.0,  0.5,
+     0.5, -0.5,
   };
 
   GLuint vb;
@@ -56,7 +55,6 @@ int main(int argc, char **argv) {
 
   unsigned int indices[] = {
     0, 1, 2,
-    1, 2, 3,
   };
 
   GLuint eb;
@@ -64,20 +62,12 @@ int main(int argc, char **argv) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  std::string vertex_source = load_shader_source("res/shaders/basic.vert");
-  GLuint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source.c_str());
-
-  std::string fragment_source = load_shader_source("res/shaders/basic.frag");
-  GLuint fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source.c_str());
-
-  GLuint program = create_program(vertex_shader, fragment_shader);
-  glUseProgram(program);
+  Shader shader("res/shaders/basic.vert", "res/shaders/basic.frag");
+  shader.bind();
 
   glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void *)0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void *)(2 * sizeof(float)));
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (const void *)0);
 
   for (int i = 1; i < argc; ++i) {
     if (std::strcmp(argv[i], "--wireframe") == 0) {
@@ -92,10 +82,9 @@ int main(int argc, char **argv) {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    float time = glfwGetTime();
-    float green = (std::sin(time) / 2.0) + 0.5;
-    GLint uniform_color = glGetUniformLocation(program, "uniform_color");
-    glUniform4f(uniform_color, 0.0, green, 0.0, 1.0);
+    // We want offset to oscillate between -0.5 and 0.5
+    float offset = std::sin(glfwGetTime() * 2.0) * 0.5;
+    shader.set_uniform("uniform_offset", offset);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

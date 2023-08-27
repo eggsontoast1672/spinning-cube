@@ -2,31 +2,21 @@
 
 #include <string>
 
-#include <glad/glad.h>
+#include "spinning-cube/types.hpp"
 
-/// \brief Initializes and compiles an OpenGL shader program object.
-///
-/// \param vertex_shader The vertex shader object to use.
-/// \param fragment_shader The fragment shader object to use.
-///
-/// \return The OpenGL ID uniquely identifying the shader program object.
-GLuint create_program(GLuint vertex_shader, GLuint fragment_shader);
+class Shader {
+public:
+  Shader(const char *vertex_path, const char *fragment_path);
 
-/// \brief Initializes and compiles an OpenGL shader object.
-///
-/// \param type The type of shader to create. Currently, only GL_VERTEX_SHADER
-///             and GL_FRAGMENT_SHADER are supported.
-/// \param source The source code for the shader.
-///
-/// \return The OpenGL ID uniquely identifying the shader object.
-GLuint create_shader(GLenum type, const char *source);
+  void bind() const;
+  void set_uniform(const char *name, float value) const;
 
-/// \brief Load the source code of a shader.
-///
-/// \param path The path to the file containing the source code. Ideally, this
-///             is an absolute path. The get_resource_path function can be used
-///             to get the path of the resource directory, which can then be
-///             prepended onto resource files.
-///
-/// \return The entire contents of the file at path.
-std::string load_shader_source(const std::string &path);
+private:
+  uint m_id;
+
+  static constexpr std::size_t log_size = 512;
+
+  static uint create_shader(uint type, const char *source);
+  static uint create_program(uint vertex_shader, uint fragment_shader);
+  static std::string load_shader_source(const char *path);
+};
