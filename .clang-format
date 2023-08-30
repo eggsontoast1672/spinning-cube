@@ -1,0 +1,5 @@
+AccessModifierOffset: -4
+AlignOperands: DontAlign
+AllowShortFunctionsOnASingleLine: Empty
+ColumnLimit: 0
+IndentWidth: 4

@@ -1,82 +1,66 @@
-#include "spinning-cube/shader.hpp"
+#include "shader.hpp"
 
-#include <cstring>
 #include <fstream>
-#include <iostream>
-#include <iterator>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 
 #include <glad/glad.h>
 
-#include "spinning-cube/types.hpp"
+#include "error.hpp"
 
-Shader::Shader(const char *vertex_path, const char *fragment_path) {
-  std::string vertex_source = load_shader_source(vertex_path);
-  std::string fragment_source = load_shader_source(fragment_path);
+Shader::Shader(GLuint vertex_shader, GLuint fragment_shader) {
+    gl_check(m_id = glCreateProgram());
+    gl_check(glAttachShader(m_id, vertex_shader));
+    gl_check(glAttachShader(m_id, fragment_shader));
+    gl_check(glLinkProgram(m_id));
 
-  uint vertex_shader = create_shader(GL_VERTEX_SHADER, vertex_source.c_str());
-  uint fragment_shader = create_shader(GL_FRAGMENT_SHADER, fragment_source.c_str());
+    gl_check(glDeleteShader(vertex_shader));
+    gl_check(glDeleteShader(fragment_shader));
 
-  m_id = create_program(vertex_shader, fragment_shader);
+    GLint status;
+    gl_check(glGetProgramiv(m_id, GL_LINK_STATUS, &status));
+    if (!status) {
+        char buffer[512];
+        gl_check(glGetProgramInfoLog(m_id, sizeof(buffer), nullptr, buffer));
+        gl_check(glDeleteProgram(m_id));
+        throw std::runtime_error{buffer};
+    }
+}
 
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
+Shader::~Shader() {
+    gl_check(glDeleteProgram(m_id));
 }
 
 void Shader::bind() const {
-  glUseProgram(m_id);
+    gl_check(glUseProgram(m_id));
 }
 
-void Shader::set_uniform(const char *name, float value) const {
-  glUniform1f(glGetUniformLocation(m_id, name), value);
+GLuint create_shader(GLenum type, const char *source) {
+    GLuint shader;
+    gl_check(shader = glCreateShader(type));
+    gl_check(glShaderSource(shader, 1, &source, nullptr));
+    gl_check(glCompileShader(shader));
+
+    GLint status;
+    gl_check(glGetShaderiv(shader, GL_COMPILE_STATUS, &status));
+    if (!status) {
+        char buffer[512];
+        gl_check(glGetShaderInfoLog(shader, sizeof(buffer), nullptr, buffer));
+        gl_check(glDeleteShader(shader));
+        throw std::runtime_error{buffer};
+    }
+
+    return shader;
 }
 
-uint Shader::create_program(uint vertex_shader, uint fragment_shader) {
-  uint program = glCreateProgram();
-  glAttachShader(program, vertex_shader);
-  glAttachShader(program, fragment_shader);
-  glLinkProgram(program);
-
-  int status;
-  glGetProgramiv(program, GL_LINK_STATUS, &status);
-  if (!status) {
-    char log[log_size];
-    glGetProgramInfoLog(program, log_size, nullptr, log);
-    std::cerr << log << std::endl;
-  }
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
-
-  return program;
-}
-
-uint Shader::create_shader(uint type, const char *source) {
-  uint shader = glCreateShader(type);
-  glShaderSource(shader, 1, &source, nullptr);
-  glCompileShader(shader);
-
-  int status;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-  if (!status) {
-    char log[log_size];
-    glGetShaderInfoLog(shader, log_size, nullptr, log);
-    std::cerr << log << std::endl;
-  }
-
-  return shader;
-}
-
-std::string Shader::load_shader_source(const char *path) {
-  std::fstream stream;
-  stream.exceptions(std::fstream::badbit | std::fstream::failbit);
-  try {
-    stream.open(path);
-  } catch (const std::ios_base::failure &error) {
-    std::cerr << error.what() << std::endl;
-  }
-  return std::string{
-    std::istreambuf_iterator<char>{stream},
-    std::istreambuf_iterator<char>{}
-  };
+std::string load_shader_source(const std::string &path) {
+    std::ifstream ifs{path};
+    std::ostringstream oss;
+    if (ifs.fail()) {
+        oss << "failed to open file '" << path << "'";
+        throw std::runtime_error(oss.str());
+    }
+    oss << ifs.rdbuf();
+    return oss.str();
 }
