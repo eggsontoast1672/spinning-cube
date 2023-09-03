@@ -1,5 +1,9 @@
 AccessModifierOffset: -4
+AlignAfterOpenBracket: BlockIndent
 AlignOperands: DontAlign
 AllowShortFunctionsOnASingleLine: Empty
 ColumnLimit: 0
+ConstructorInitializerIndentWidth: 0
+IndentPPDirectives: BeforeHash
 IndentWidth: 4
+SpaceBeforeCpp11BracedList: True
