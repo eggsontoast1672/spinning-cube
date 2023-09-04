@@ -1,16 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
-
 project(SpinningCube VERSION 0.0.5)
 
-set(CMAKE_BUILD_TYPE Debug)
-
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-
-add_subdirectory(lib/glad)
-add_subdirectory(lib/glfw)
-add_subdirectory(lib/stb)
+find_package(PkgConfig)
+pkg_check_modules(GLEW REQUIRED glew)
+pkg_check_modules(GLFW REQUIRED glfw3)
 
 add_executable(
   cube
@@ -28,9 +21,8 @@ set_property(TARGET cube PROPERTY CXX_STANDARD 11)
 set_property(TARGET cube PROPERTY CXX_STANDARD_REQUIRED ON)
 
 target_compile_definitions(cube PRIVATE GLFW_INCLUDE_NONE)
+target_compile_options(cube PRIVATE -Wall -Wextra -Wpedantic)
 target_include_directories(cube PRIVATE include)
-target_link_libraries(cube PRIVATE glad glfw stb)
+target_link_libraries(cube PRIVATE ${GLEW_LIBRARIES} ${GLFW_LIBRARIES})
 
-if(NOT MSVC)
-  target_compile_options(cube PRIVATE -Wall -Wextra -Wpedantic)
-endif()
+add_custom_target(run COMMAND cube WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

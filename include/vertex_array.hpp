@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 
 #include "index_buffer.hpp"
 #include "vertex_buffer.hpp"

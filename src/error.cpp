@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 
 void glCheckError(const std::string &file, int line, const std::string &expression) noexcept {
     GLenum error = glGetError();

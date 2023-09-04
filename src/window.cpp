@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <GL/glew.h>
 
 #include "error.hpp"
 #include "shader.hpp"
@@ -28,9 +28,9 @@ Window::Window() {
 
     glfwMakeContextCurrent(m_handle);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (glewInit() != GLEW_OK) {
         glfwTerminate();
-        throw std::runtime_error {"failed to initialize glad"};
+        throw std::runtime_error {"failed to initialize glew"};
     }
 
     glfwSetWindowSizeCallback(m_handle, [](GLFWwindow *window, int width, int height) {

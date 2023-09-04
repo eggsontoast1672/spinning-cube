@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 
 class VertexBuffer {
 public:

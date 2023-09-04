@@ -3,7 +3,7 @@
 #include <utility>
 #include <vector>
 
-#include <glad/glad.h>
+#include <GL/glew.h>
 
 #include "error.hpp"
 
