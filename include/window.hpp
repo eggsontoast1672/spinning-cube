@@ -6,15 +6,12 @@
 #include "vertex_array.hpp"
 
 class Window {
-private:
-    static Window s_instance;
-
-    Window();
-
 public:
+    Window();
     Window(const Window &) = delete;
-    Window(Window &&) = delete;
     ~Window() noexcept;
+
+    Window &operator=(const Window &) = delete;
 
     void clear() const noexcept;
     void display() const noexcept;
@@ -23,9 +20,7 @@ public:
 
     static Window &instance() noexcept;
 
-    Window &operator=(const Window &) = delete;
-    Window &operator=(Window &&) = delete;
-
 private:
     GLFWwindow *m_handle;
+    VertexArray m_vertex_array;
 };

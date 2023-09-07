@@ -1,14 +1,37 @@
+#include <stdexcept>
+
 #include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
 
 #include "error.hpp"
-#include "shader.hpp"
-#include "vertex_array.hpp"
 #include "window.hpp"
 
 int main() {
+    if (!glfwInit()) {
+        throw std::runtime_error {"failed to initialize glfw"};
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    Window window;
+
+    if (glewInit() != GLEW_OK) {
+        throw std::runtime_error {"failed to initialize glew"};
+    }
+
+    window.set_resize_callback([](int width, int height) {
+        glCall(glViewport(0, 0, width, height));
+    });
+
+    glCall(glEnable(GL_DEPTH_TEST));
+
     VertexArray vertex_array;
+
+    VertexBuffer {
+
+    };
 
     vertex_array.set_vertices_binding({
         // Top face
