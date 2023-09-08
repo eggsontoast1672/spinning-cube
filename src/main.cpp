@@ -92,19 +92,30 @@ int main()
 
     Shader shader {"res/shaders/basic.vert", "res/shaders/basic.frag"};
 
-    glm::mat4 model {1.0f};
+    glm::mat4 model;
     glm::mat4 view = glm::translate(glm::mat4 {1.0f}, glm::vec3 {0.0f, 0.0f, -3.0f});
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection;
 
-    shader.set_uniform_mat4("u_model", model);
     shader.set_uniform_mat4("u_view", view);
-    shader.set_uniform_mat4("u_projection", projection);
 
     while (!window.should_close()) {
         window.clear();
 
-        model = glm::rotate(glm::mat4 {1.0f}, static_cast<float>(glfwGetTime()), glm::vec3 {0.5f, 1.0f, 0.0f});
+        model = glm::rotate(
+            glm::mat4 {1.0f},
+            static_cast<float>(glfwGetTime()),
+            glm::vec3 {0.5f, 1.0f, 0.0f}
+        );
         shader.set_uniform_mat4("u_model", model);
+
+        glm::vec2 size = window.get_size();
+        projection = glm::perspective(
+            glm::radians(45.0f),
+            size.x / size.y,
+            0.1f,
+            100.0f
+        );
+        shader.set_uniform_mat4("u_projection", projection);
 
         index_buffer.draw();
         window.display();

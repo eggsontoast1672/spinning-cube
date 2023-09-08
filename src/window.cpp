@@ -4,6 +4,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include "error.hpp"
 
@@ -30,6 +31,13 @@ void Window::clear() const noexcept
 void Window::display() const noexcept
 {
     glfwSwapBuffers(m_handle);
+}
+
+glm::vec2 Window::get_size() const noexcept
+{
+    int width, height;
+    glfwGetWindowSize(m_handle, &width, &height);
+    return glm::vec2 {width, height};
 }
 
 void Window::set_resize_callback(GLFWwindowsizefun callback) const noexcept

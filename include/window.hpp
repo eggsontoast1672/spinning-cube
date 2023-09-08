@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include "shader.hpp"
 #include "vertex_array.hpp"
@@ -16,6 +17,7 @@ public:
 
     void clear() const noexcept;
     void display() const noexcept;
+    glm::vec2 get_size() const noexcept;
     void set_resize_callback(GLFWwindowsizefun callback) const noexcept;
     bool should_close() const noexcept;
 
