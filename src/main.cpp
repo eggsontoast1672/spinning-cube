@@ -12,6 +12,11 @@
 #include "vertex_buffer.hpp"
 #include "window.hpp"
 
+static float oscillate(float low, float high, float speed = 1.0f)
+{
+    return (std::cos(glfwGetTime() * speed) * -0.5f + 0.5f) * (high - low) + low;
+}
+
 int main()
 {
     if (!glfwInit()) {
@@ -93,10 +98,8 @@ int main()
     Shader shader {"res/shaders/basic.vert", "res/shaders/basic.frag"};
 
     glm::mat4 model;
-    glm::mat4 view = glm::translate(glm::mat4 {1.0f}, glm::vec3 {0.0f, 0.0f, -3.0f});
+    glm::mat4 view;
     glm::mat4 projection;
-
-    shader.set_uniform_mat4("u_view", view);
 
     while (!window.should_close()) {
         window.clear();
@@ -104,9 +107,13 @@ int main()
         model = glm::rotate(
             glm::mat4 {1.0f},
             static_cast<float>(glfwGetTime()),
-            glm::vec3 {0.5f, 1.0f, 0.0f}
+            glm::vec3 {0.1f, 0.5f, 0.0f}
         );
-        shader.set_uniform_mat4("u_model", model);
+
+        view = glm::translate(
+            glm::mat4 {1.0f},
+            glm::vec3 {0.0f, 0.0f, -oscillate(3.0f, 30.0f)}
+        );
 
         glm::vec2 size = window.get_size();
         projection = glm::perspective(
@@ -115,6 +122,9 @@ int main()
             0.1f,
             100.0f
         );
+
+        shader.set_uniform_mat4("u_model", model);
+        shader.set_uniform_mat4("u_view", view);
         shader.set_uniform_mat4("u_projection", projection);
 
         index_buffer.draw();
