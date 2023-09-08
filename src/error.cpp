@@ -5,7 +5,8 @@
 
 #include <GL/glew.h>
 
-void glCheckError(const std::string &file, int line, const std::string &expression) noexcept {
+void glCheckError(const std::string &file, int line, const std::string &expression) noexcept
+{
     GLenum error = glGetError();
     if (error == GL_NO_ERROR) {
         return;

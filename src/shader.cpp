@@ -12,7 +12,8 @@
 #include "error.hpp"
 
 Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
-: m_id {0} {
+    : m_id {0}
+{
     std::string vertex_source = load_source(vertex_path);
     std::string fragment_source = load_source(fragment_path);
 
@@ -35,26 +36,24 @@ Shader::Shader(const std::string &vertex_path, const std::string &fragment_path)
         glCall(glDeleteProgram(m_id));
         throw std::runtime_error {log};
     }
-}
 
-Shader::~Shader() noexcept {
-    if (m_id) {
-        glCall(glDeleteProgram(m_id));
-    }
-}
-
-void Shader::bind() const noexcept {
     glCall(glUseProgram(m_id));
 }
 
-void Shader::set_uniform_mat4(const std::string &name, const glm::mat4 &matrix) const noexcept {
-    bind();
+Shader::~Shader() noexcept
+{
+    glCall(glDeleteProgram(m_id));
+}
+
+void Shader::set_uniform_mat4(const std::string &name, const glm::mat4 &matrix) const noexcept
+{
     GLint location;
     glCall(location = glGetUniformLocation(m_id, name.c_str()));
     glCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix)));
 }
 
-GLuint Shader::create_shader(GLenum type, const char *source) {
+GLuint Shader::create_shader(GLenum type, const char *source)
+{
     GLuint shader;
     glCall(shader = glCreateShader(type));
     glCall(glShaderSource(shader, 1, &source, nullptr));
@@ -72,7 +71,8 @@ GLuint Shader::create_shader(GLenum type, const char *source) {
     return shader;
 }
 
-std::string Shader::load_source(const std::string &path) {
+std::string Shader::load_source(const std::string &path)
+{
     std::ifstream ifs {path};
     std::ostringstream oss;
     if (ifs.fail()) {

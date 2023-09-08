@@ -5,12 +5,15 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-class Shader {
+class Shader
+{
 public:
     Shader(const std::string &vertex_path, const std::string &fragment_path);
+    Shader(const Shader &) = delete;
     ~Shader() noexcept;
 
-    void bind() const noexcept;
+    Shader &operator=(const Shader &) = delete;
+
     void set_uniform_mat4(const std::string &name, const glm::mat4 &matrix) const noexcept;
 
 private:

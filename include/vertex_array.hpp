@@ -2,7 +2,8 @@
 
 #include <GL/glew.h>
 
-class VertexArray {
+class VertexArray
+{
 public:
     VertexArray() noexcept;
     VertexArray(const VertexArray &) = delete;

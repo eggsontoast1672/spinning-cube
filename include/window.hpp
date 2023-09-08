@@ -5,7 +5,8 @@
 #include "shader.hpp"
 #include "vertex_array.hpp"
 
-class Window {
+class Window
+{
 public:
     Window();
     Window(const Window &) = delete;
@@ -15,12 +16,9 @@ public:
 
     void clear() const noexcept;
     void display() const noexcept;
-    void draw_binding(const VertexArray &vertex_array, const Shader &shader) const noexcept;
+    void set_resize_callback(GLFWwindowsizefun callback) const noexcept;
     bool should_close() const noexcept;
-
-    static Window &instance() noexcept;
 
 private:
     GLFWwindow *m_handle;
-    VertexArray m_vertex_array;
 };

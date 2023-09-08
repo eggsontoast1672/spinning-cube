@@ -1,24 +1,22 @@
 #pragma once
 
+#include <initializer_list>
 #include <vector>
 
 #include <GL/glew.h>
 
-class IndexBuffer {
+class IndexBuffer
+{
 public:
-    IndexBuffer() noexcept;
+    IndexBuffer(std::initializer_list<unsigned int> indices) noexcept;
     IndexBuffer(const IndexBuffer &) = delete;
-    IndexBuffer(IndexBuffer &&other) noexcept;
     ~IndexBuffer() noexcept;
 
-    void bind() const noexcept;
-    void draw() const noexcept;
-    void set_data_binding(const std::vector<unsigned int> &data) noexcept;
-
     IndexBuffer &operator=(const IndexBuffer &) = delete;
-    IndexBuffer &operator=(IndexBuffer &&other) noexcept;
+
+    void draw() const noexcept;
 
 private:
     GLuint m_id;
-    std::vector<unsigned int> m_data;
+    GLsizei m_count;
 };

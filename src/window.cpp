@@ -6,12 +6,9 @@
 #include <GLFW/glfw3.h>
 
 #include "error.hpp"
-#include "shader.hpp"
-#include "vertex_array.hpp"
 
-// Window Window::s_instance;
-
-Window::Window() {
+Window::Window()
+{
     m_handle = glfwCreateWindow(800, 600, "Spinning Cube", nullptr, nullptr);
     if (!m_handle) {
         glfwTerminate();
@@ -20,19 +17,28 @@ Window::Window() {
     glfwMakeContextCurrent(m_handle);
 }
 
-Window::~Window() noexcept {
+Window::~Window() noexcept
+{
     glfwTerminate();
 }
 
-void Window::clear() const noexcept {
+void Window::clear() const noexcept
+{
     glCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
-void Window::display() const noexcept {
+void Window::display() const noexcept
+{
     glfwSwapBuffers(m_handle);
 }
 
-bool Window::should_close() const noexcept {
+void Window::set_resize_callback(GLFWwindowsizefun callback) const noexcept
+{
+    glfwSetWindowSizeCallback(m_handle, callback);
+}
+
+bool Window::should_close() const noexcept
+{
     glfwPollEvents();
     return glfwWindowShouldClose(m_handle);
 }
